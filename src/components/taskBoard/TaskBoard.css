@@ -1,0 +1,37 @@
+.board {
+
+   width: fit-content;
+   display: table-row;
+   float: left;
+   
+
+   padding-left: 0px; 
+    /* //position: relative; */
+    overflow-y: scroll;
+    max-height: 550px;
+}
+
+.Button-custom{
+    width: 100%;
+    border-color: white;
+    outline: none;
+    border:0px;
+    text-align: left;
+}
+
+.bag-color {
+    background: #a3a9b6;
+    margin-left: 20px;
+    margin-right: 20px;
+    float: left;
+    
+}
+
+.close {
+    float: right;
+     padding:2px 5px;
+    background:#ccc; 
+    align-self: flex-end;
+    margin-right: 2px;
+    font-size: 15px;
+}

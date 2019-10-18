@@ -20,3 +20,17 @@
 .App-link {
   color: #09d3ac;
 }
+
+.div-custom {
+  overflow: auto;
+  margin:0 auto;
+}
+
+.contentWrapper {
+  float: left;
+  margin-right: -30000px;
+}
+
+.card-body-custom {
+  width: 50px;
+}

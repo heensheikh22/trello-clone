@@ -1,0 +1,12 @@
+.card-custom {
+    padding: 0px;
+    margin:10px;
+    height: fit-content;
+    width:250px;
+    padding-right: 10px;
+    display: table-row;
+}
+
+.close {
+    font-size: 10px;
+}
