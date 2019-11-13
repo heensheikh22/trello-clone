@@ -5,64 +5,24 @@ import TaskBoard from './components/taskBoard/TaskBoard';
 import Button from 'react-bootstrap/Button';
 import {getTaskboard} from './redux/selectors'; 
 import Card from 'react-bootstrap/Card';
-import {addTaskboard} from './redux/actions';
+import {addTaskboard, addNewList} from './redux/actions';
 import { connect } from "react-redux";
+import {useDispatch, useSelector } from 'react-redux';
 
 
-class App extends React.Component<any,any> {
-  constructor(props) {
-    super(props)
-    this.state = {
-     // taskboard: TaskBoardData,
-      title:"",
-      newList: false
-    }
-    this.handleNewList =this.handleNewList.bind(this)
-    this.handleAddTaskboard =this.handleAddTaskboard.bind(this)
-    this.handleTaskboardClose =this.handleTaskboardClose.bind(this)
-  }
-
-  handleNewList() {
-    this.setState( {
-      newList: true
-    })
-  }
-
-  handleAddTaskboard () {
-    // const temptaskboard = this.state.taskboard
-    // temptaskboard.push({
-    //     id: this.state.id,
-    //     title: this.state.title,
-    // })
-    this.setState( {
-      name: this.state.title
-    })
-    this.props.addTaskboard(this.state.title);
-    
-    this.setState({name: "", newList: false, desc: ""})
-  }
-
-  handleChange = e => {
-    const { name, value } = e.target;
-    this.setState({
-        [name] : value
-    })
-  }
-
-  handleTaskboardClose(event) {
-    // //const tempData = this.state.taskboard.filter(task =>
-    //   task.id !== event.target.value)
-    // this.setState({
-    //   // taskboard: tempData
-    // })
-    console.log(this.state.taskboard)
-  }
+function App(tempTaskboards) { 
   
-  render() {
-    const temp = getTaskboard(this.state);
-    console.log(this.state);
-    const taskBoard =  temp.map(taskboard => <TaskBoard key={taskboard.id} id={taskboard.id} title={taskboard.title} handleTaskboardClose= {this.handleTaskboardClose} />)
+    const tempTaskboard = useSelector(state => state.taskBoards);
+  
+    const tempaddNewList = useSelector(state => state.addNewList);
+    let taskBoard;
     
+    if(tempTaskboards.taskboards.length > 0){
+       taskBoard =  tempTaskboards.taskboards.map(taskboard => <TaskBoard key={taskboard.id} id={taskboard.id} name={taskboard.name} />)
+    }
+    
+    const dispatch = useDispatch();
+    let input;
     return (
       <div>
         <div>
@@ -70,30 +30,41 @@ class App extends React.Component<any,any> {
         </div>
         <div className="div-custom"> 
           <div className="contentWrapper">
-            
-            {!this.state.newList && (
-              <Button onClick={this.handleNewList}>Add New List</Button>
+              {taskBoard} 
+            {!tempaddNewList && (
+              <Button onClick={()=>dispatch(addNewList())}>Add New List</Button>
             )}
-            {this.state.newList && (
-                      <Card >
-                          <Card.Body>
-                              <input placeholder="Title" name="title" id="title" onChange={this.handleChange}></input><br /> 
-                              <Button onClick= {this.handleAddTaskboard}> Add List</Button>
-                          </Card.Body>
-                      </Card>
-                  )}
+            {tempaddNewList && (
+              <Card >
+                  <Card.Body>
+                    <form
+                      onSubmit={e => {
+                        e.preventDefault();
+                        if (!input.value.trim()) {
+                            return;
+                        }
+                        dispatch(addTaskboard(input.value));
+                        dispatch(addNewList())
+                        input.value = "";
+                        }}
+                    >
+                      <input placeholder="Title" name="title" id="title" ref={node => input = node}></input><br /> 
+                      <Button type= 'submit' > Add List</Button>
+                    </form>
+                  </Card.Body>
+                </Card>
+            )}
           </div>
         </div>
       </div>  
     );
   }
 
-}
 
-// export default App;
+  const mapStateToProps = function(state) {
+    return {
+      taskboards: state.taskboards
+    }
+  }
 
-export default connect(
-  null,
-  { addTaskboard }
-)(App);
-
+export default connect(mapStateToProps)(App);

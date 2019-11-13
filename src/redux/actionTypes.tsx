@@ -1,1 +1,2 @@
 export const ADD_TASKBOARD ='ADD_TASKBOARD';
+export const ADD_NEW_LIST ='ADD_NEW_LIST';

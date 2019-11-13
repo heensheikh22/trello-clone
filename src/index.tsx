@@ -5,9 +5,13 @@ import App from './App';
 import * as serviceWorker from './serviceWorker';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Provider } from 'react-redux';
-import store  from './redux/store';
+import { compose, createStore } from 'redux';
+import rootReducer from './redux/reducers/index';
 
 
+const composeEnhancers = (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+
+const store = createStore(rootReducer, composeEnhancers && (window as any).__REDUX_DEVTOOLS_EXTENSION__())
 ReactDOM.render(
         <Provider store={store}>
             <App />

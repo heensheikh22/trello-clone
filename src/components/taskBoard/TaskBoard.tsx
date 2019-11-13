@@ -4,102 +4,71 @@ import './TaskBoard.css';
 import Button from 'react-bootstrap/Button';
 import TaskData from './../../TaskData';
 import Card from 'react-bootstrap/Card';
+import {useDispatch, useSelector} from 'react-redux';
+import { addTaskboard, addTaskCard, addNewTaskCard, editTask } from '../../redux/actions';
+import { connect } from "react-redux";
 
-class TaskBoard extends React.Component<any,any> {
-    
-    constructor(props: any) {
-        super(props)
-        this.state = {
-            tasks: TaskData,
-            addComponent: false,
-            taskdesc: "",
-            taskname: "",
-            id: 3,
-            boardid: props.id,
-        }
-        this.addCard =this.addCard.bind(this)
-        this.handleChange =this.handleChange.bind(this)
-        this.handleSubmit =this.handleSubmit.bind(this)
-        this.handleClose =this.handleClose.bind(this)
-        this.handleCardClose =this.handleCardClose.bind(this)
-    }
-    
-    addCard(e) {
-        console.log(this.props)
-        this.setState( {
-            addComponent: true
-        })
-    }
+function TaskBoard(props) {
 
-    handleChange = e => {
-        const { name, value } = e.target;
-        this.setState({
-            [name] : value
-        })
-    }
+        const taskCard = props.tasks.filter(task => 
+        task.id.slice(0,-1) === props.name ).map(task => {
+            return <Task key={task.id} id={task.id} name={task.name} 
+                    desc={task.desc}>
+            </Task>})
 
-    handleSubmit (e) {
-        const temptask = this.state.tasks
-        const tempid = this.state.id +1
-        temptask.push({
-            id: this.props.title+tempid,
-            title: null,
-            name: this.state.taskname,
-            desc: this.state.taskdesc
-        })
-        this.setState({task : temptask, taskname: "", taskdesc: "", addComponent: false, id:this.state.id +1})
-    }
-
-    handleClose(e) {
-        this.setState( {
-            addComponent: false
-        })
-    }
-
-    handleCardClose(cardId){
-        const tempData = this.state.tasks.filter(task =>
-            task.id !== cardId.target.value)
-        this.setState({
-            tasks: tempData
-        })
-        
-    }
-
-    render() {
-        const taskCard =  this.state.tasks.filter(task => 
-            task.id.slice(0,-1) === this.props.title ).map( task => {
-                return <Task key= {task.id} id={task.id} name={task.name} description={task.desc} handleCardClose= {this.handleCardClose}/> 
-            })
+        console.log(props)
+        const dispatch1 = useDispatch();
+        const tempaddNewtask = useSelector(state => state.addNewTaskCard);
+        let taskName;
+        let taskDesc;
         return (
         <div className= "bag-color">
              
             <div>
-            <Button className="close" onClick={this.props.handleTaskboardClose} value= {this.props.id}> x </Button>
-                <h5>{this.props.title}</h5>
+            <Button className="close" > x </Button>
+                <h5>{props.name}</h5>
             </div>
             <div className="board">
                 {taskCard}
             </div>
             <div >
-                <button className="Button-custom"  onClick = {e => this.addCard(e)}> + Add new card</button>
-                {this.state.addComponent && (
+                <button className="Button-custom" onClick={()=>dispatch1(addNewTaskCard())}> + Add new card</button>
+                {tempaddNewtask && (
                     <Card >
-                        <Button className="close" id="close" onClick={this.handleClose}> x </Button>
+                        <Button className="close" id="close"> x </Button>
                         <Card.Body>
-                            
-                            <input placeholder="Name" name="taskname" id="name" onChange={this.handleChange}></input><br /> 
-                            <input placeholder="Description" name="taskdesc" id="taskdesc" onChange={this.handleChange}></input><br />
-                            <Button value= {this.state.boardid} onClick= {e => this.handleSubmit(e)}>Add Card</Button>
+                            <form
+                                onSubmit={e => {
+                                e.preventDefault();
+                                if (!taskName.value.trim()) {
+                                    return;
+                                }
+                                dispatch1(addTaskCard(taskName.value, taskDesc.value, props.name));
+                                dispatch1(addNewTaskCard())
+                                taskName.value = "";
+                            }}
+                            >
+                                <input placeholder="Name" name="taskname" ref = {node => taskName = node} ></input><br /> 
+                                <input placeholder="Description" name="taskdesc" ref = {node => taskDesc = node} ></input><br />
+                                <Button type= 'submit'>Add Card</Button> 
+                            </form>
                         </Card.Body>
                     </Card>
                 )}
             </div>
-            
-            </div>
-        );
-    }
+        </div>
+    );
+}
     
+
+const mapStateToProps = function(state) {
+    return {
+      tasks: state.taskCards
+    }
 }
 
+const mapDispatchToProps = dispatch => ({
+    editTasks: id => dispatch(editTask(id,'desc'))
+})  
 
-export default TaskBoard;
+export default connect(mapStateToProps, mapDispatchToProps)(TaskBoard);

@@ -1,28 +1,19 @@
 import {ADD_TASKBOARD} from './../actionTypes';
 
-const initialState = {
-    allIds : [] as any,
-    byId : {} 
-};
-
-export default function(state=initialState, action){
-    console.log(action)
+const taskboards = (state = [], action) => {
     switch(action.type) {
-        case ADD_TASKBOARD: {
-            const {id, name} = action.payload;
-            console.log(state)
-            return {
+        case 'ADD_TASKBOARD':
+            return [
                 ...state,
-                allIds: [...state.allIds,id],
-                byId: {
-                    ...state,
-                    [id]: {
-                         name
-                    }
+                {
+                    id: action.id,
+                    name: action.name,
+                   
                 }
-            }
-        }
-        default:
+            ];
+        default :
             return state;
     }
 }
+
+export default taskboards;
